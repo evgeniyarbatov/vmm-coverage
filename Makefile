@@ -29,7 +29,7 @@ serve:
 clean:
 	rm -f $(DATA_DIR)/samples.json $(DATA_DIR)/cells.json $(DATA_DIR)/gaps.json
 	rm -f docs/coverage.csv docs/coverage.gpx docs/summary.md
-	rm -f site/coverage.geojson site/gaps.json
+	rm -f site/coverage.geojson site/gaps.json site/osm_masts.geojson
 
 help:
 	@echo "install  - uv sync --group dev"

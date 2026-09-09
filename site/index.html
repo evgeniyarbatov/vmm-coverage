@@ -39,19 +39,19 @@
 </head>
 <body>
 <div id="banner">
-  <h1>VMM coverage — observed towers near the track</h1>
-  <div>Approximate cell-tower density from OpenCellID, not live signal. Red = no observed
-  towers within the search radius. This is not a guarantee of signal.</div>
+  <h1>VMM Cell Coverage</h1>
   <div id="tabs">
     <button id="tabMap" class="active">Map</button>
     <button id="tabTable">By carrier</button>
   </div>
+  <div style="margin-top: 8px;"><a href="https://github.com/evgeniyarbatov/vmm-coverage" target="_blank" rel="noopener">Source on GitHub</a></div>
 </div>
 <div id="legend">
   <div><span class="dot" style="background:#c0392b"></span> none</div>
   <div><span class="dot" style="background:#e67e22"></span> sparse</div>
   <div><span class="dot" style="background:#f1c40f"></span> moderate</div>
   <div><span class="dot" style="background:#27ae60"></span> dense</div>
+  <div><span class="dot" style="background:#2c3e50;border-radius:2px;"></span> OSM base station</div>
 </div>
 <div id="map"></div>
 <div id="tableView" hidden></div>
@@ -103,6 +103,24 @@ function renderMap(geojson, gaps) {
       color: "#c0392b", weight: 4, opacity: 0.6, dashArray: "6 6",
     }).bindPopup(`dead zone: km ${g.start_km.toFixed(1)}–${g.end_km.toFixed(1)} ` +
       `(${g.length_km.toFixed(1)} km)`).addTo(map);
+  }
+
+  return map;
+}
+
+function renderOsmMasts(map, geojson) {
+  const icon = L.divIcon({
+    className: "",
+    html: '<div style="width:8px;height:8px;background:#2c3e50;border-radius:2px;"></div>',
+    iconSize: [8, 8],
+  });
+  for (const f of geojson.features) {
+    const [lon, lat] = f.geometry.coordinates;
+    const tags = f.properties.tags || {};
+    const tagLines = Object.entries(tags).map(([k, v]) => `${k}: ${v}`).join("<br>");
+    L.marker([lat, lon], { icon })
+      .bindPopup(`OSM base station<br>${tagLines || "no tags"}`)
+      .addTo(map);
   }
 }
 
@@ -166,8 +184,10 @@ async function main() {
     return;
   }
   const gaps = (await loadJson("gaps.json")) || [];
+  const osmMasts = await loadJson("osm_masts.geojson");
 
-  renderMap(geojson, gaps);
+  const map = renderMap(geojson, gaps);
+  if (osmMasts) renderOsmMasts(map, osmMasts);
   renderTable(geojson, gaps);
 
   document.getElementById("tabMap").addEventListener("click", () => setTab("map"));

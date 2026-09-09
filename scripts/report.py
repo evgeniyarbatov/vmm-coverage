@@ -78,6 +78,18 @@ def write_geojson(site_dir: Path, coverage: list[SampleCoverage], gaps: list[Run
     (site_dir / "gaps.json").write_text(json.dumps([asdict(g) for g in gaps], indent=2))
 
 
+def write_osm_geojson(site_dir: Path, masts: list[dict]) -> None:
+    """OSM masts as their own file/layer; presence only, not coverage."""
+    site_dir.mkdir(parents=True, exist_ok=True)
+    features = [{
+        "type": "Feature",
+        "geometry": {"type": "Point", "coordinates": [m["lon"], m["lat"]]},
+        "properties": {"tags": m.get("tags", {})},
+    } for m in masts]
+    geojson = {"type": "FeatureCollection", "features": features}
+    (site_dir / "osm_masts.geojson").write_text(json.dumps(geojson))
+
+
 def write_summary(docs_dir: Path, config: dict, coverage: list[SampleCoverage],
                    gaps: list[Run]) -> None:
     docs_dir.mkdir(parents=True, exist_ok=True)

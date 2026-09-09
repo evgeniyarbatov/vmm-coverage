@@ -7,7 +7,14 @@ from pathlib import Path
 from scripts.config import get_data_dir, load_config
 from scripts.coverage import find_gaps, score_samples
 from scripts.gpx import bbox, densify, load_track
-from scripts.report import write_csv, write_data_json, write_geojson, write_gpx, write_summary
+from scripts.report import (
+    write_csv,
+    write_data_json,
+    write_geojson,
+    write_gpx,
+    write_osm_geojson,
+    write_summary,
+)
 
 
 def load_json(path: Path, default):
@@ -46,11 +53,13 @@ def main() -> int:
     write_csv(docs_dir, coverage)
     write_gpx(docs_dir, coverage, gaps)
     write_geojson(site_dir, coverage, gaps)
+    write_osm_geojson(site_dir, masts)
     write_summary(docs_dir, config, coverage, gaps)
 
     print(f"bbox: {box}")
     print(f"{len(samples)} samples, {len(cells)} cells, {len(masts)} masts, {len(gaps)} gaps")
-    print("wrote docs/coverage.csv, docs/coverage.gpx, docs/summary.md, site/coverage.geojson")
+    print("wrote docs/coverage.csv, docs/coverage.gpx, docs/summary.md, "
+          "site/coverage.geojson, site/osm_masts.geojson")
     return 0
 
 
