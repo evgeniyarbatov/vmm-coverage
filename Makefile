@@ -1,7 +1,8 @@
 DATA_DIR ?= $(HOME)/Documents/data/vmm-coverage
 GPX ?=
+PORT ?= 8000
 
-.PHONY: install lock test lint fetch run clean help
+.PHONY: install lock test lint fetch run serve clean help
 
 install:
 	uv sync --group dev
@@ -22,6 +23,9 @@ fetch:
 run:
 	DATA_DIR=$(DATA_DIR) uv run python -m scripts.run $(if $(GPX),--gpx $(GPX),)
 
+serve:
+	cd site && python3 -m http.server $(PORT)
+
 clean:
 	rm -f $(DATA_DIR)/samples.json $(DATA_DIR)/cells.json $(DATA_DIR)/gaps.json
 	rm -f docs/coverage.csv docs/coverage.gpx docs/summary.md
@@ -34,5 +38,6 @@ help:
 	@echo "lint     - ruff check"
 	@echo "fetch    - download/refresh cell + OSM data into DATA_DIR (needs OPENCELLID_API_KEY)"
 	@echo "run      - gpx -> sample -> join towers -> report (offline, GPX=path to override course)"
+	@echo "serve    - serve site/ locally at http://localhost:PORT (default 8000)"
 	@echo "clean    - remove derived JSON/CSV/GPX, keep downloaded tower DB"
 	@echo "DATA_DIR = $(DATA_DIR)"

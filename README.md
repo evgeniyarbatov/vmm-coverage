@@ -81,7 +81,9 @@ See [architecture.md](architecture.md) for the pipeline.
 ## Publishing the map
 
 `make run` writes `site/coverage.geojson` and `site/gaps.json`, which `site/index.html`
-(Leaflet, OSM basemap) reads. Commit `site/` after a real `make fetch && make run`;
+(Leaflet, OSM basemap) reads. `make serve` serves `site/` locally at
+`http://localhost:8000` (browsers block `fetch` of local files opened directly, so don't
+just double-click `index.html`). Commit `site/` after a real `make fetch && make run`;
 `.github/workflows/pages.yml` deploys it on push to `main`. GitHub Pages needs to be
 enabled once (Settings → Pages → source: GitHub Actions) — note that Pages on a
 **private** repo requires GitHub Pro/Team/Enterprise; the free plan only supports it on
