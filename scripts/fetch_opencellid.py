@@ -13,7 +13,7 @@ from pathlib import Path
 
 import httpx
 
-from scripts.config import get_data_dir, load_config
+from scripts.config import get_data_dir, load_config, load_env
 from scripts.gpx import bbox, load_track
 
 DOWNLOAD_URL = "https://opencellid.org/ocid/downloads?token={token}&type=mcc&file={mcc}.csv.gz"
@@ -164,6 +164,7 @@ def fetch_via_tiled_api(box: tuple[float, float, float, float], key: str, mcc: i
 
 
 def main() -> int:
+    load_env()
     config = load_config()
     data_dir = get_data_dir()
     ocid_dir = data_dir / "opencellid"
