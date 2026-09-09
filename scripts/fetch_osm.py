@@ -11,6 +11,7 @@ from scripts.config import get_data_dir, load_config
 from scripts.gpx import bbox, load_track
 
 OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+USER_AGENT = "vmm-coverage/0.1 (personal recon tool; https://github.com/evgeniyarbatov/vmm-coverage)"
 
 QUERY_TEMPLATE = """
 [out:json][timeout:60];
@@ -43,7 +44,10 @@ def parse_elements(data: dict) -> list[dict]:
 
 
 def fetch_overpass(query: str) -> dict:
-    resp = httpx.post(OVERPASS_URL, data={"data": query}, timeout=90)
+    resp = httpx.post(
+        OVERPASS_URL, data={"data": query}, timeout=90,
+        headers={"User-Agent": USER_AGENT},
+    )
     resp.raise_for_status()
     return resp.json()
 
