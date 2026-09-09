@@ -1,0 +1,28 @@
+race:
+  name: VMM 100 Miles 2024
+  location: Sa Pa / Hoàng Liên Sơn
+  start: 2026-09-18T08:00:00+07:00
+  timezone: Asia/Ho_Chi_Minh
+
+gpx: gpx/vmm-100-miles-2024.gpx   # overridden by make GPX=...
+
+sample_m: 250
+search_radius_m: 3000
+bbox_pad_km: 15
+gap_min_km: 2.0
+
+opencellid:
+  mcc: 452
+  mncs: [1, 2, 4, 5, 7]   # empty = all VN
+  radios: []              # empty = all
+  prefer_download: true
+  max_api_credits: 200    # live-API safety cap
+
+osm:
+  enabled: true
+
+scoring:
+  none_max: 0
+  sparse_max: 2
+  moderate_max: 8
+  # else dense

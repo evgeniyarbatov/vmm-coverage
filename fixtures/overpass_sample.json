@@ -1,0 +1,8 @@
+{
+  "version": 0.6,
+  "elements": [
+    {"type": "node", "id": 1, "lat": 22.0006, "lon": 103.0008, "tags": {"man_made": "mast"}},
+    {"type": "node", "id": 2, "lat": 22.0009, "lon": 103.0012, "tags": {"tower": "communication"}},
+    {"type": "way", "id": 3, "nodes": [1, 2], "tags": {"man_made": "tower"}}
+  ]
+}

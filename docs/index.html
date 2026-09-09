@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VMM coverage map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; color: #222; }
+  #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+  #banner {
+    position: absolute; z-index: 1000; top: 12px; left: 12px; right: 12px;
+    max-width: 420px; background: #fff; border: 1px solid #ccc; border-radius: 6px;
+    padding: 10px 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  }
+  #banner h1 { font-size: 15px; margin: 0 0 4px; }
+  #legend { position: absolute; z-index: 1000; bottom: 20px; left: 12px; background: #fff;
+    border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; font-size: 12px; }
+  #legend div { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+  #legend span.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  #empty { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    font-size: 14px; color: #555; text-align: center; padding: 20px; }
+</style>
+</head>
+<body>
+<div id="banner">
+  <h1>VMM coverage — observed towers near the track</h1>
+  <div>Approximate cell-tower density from OpenCellID, not live signal. Red = no observed
+  towers within the search radius. See <a href="summary.md">summary.md</a> for the full readout.</div>
+</div>
+<div id="legend">
+  <div><span class="dot" style="background:#c0392b"></span> none</div>
+  <div><span class="dot" style="background:#e67e22"></span> sparse</div>
+  <div><span class="dot" style="background:#f1c40f"></span> moderate</div>
+  <div><span class="dot" style="background:#27ae60"></span> dense</div>
+</div>
+<div id="map"></div>
+<div id="empty">No coverage data yet. Run <code>make fetch &amp;&amp; make run</code> and commit the
+files under <code>docs/</code> to populate this map.</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const SCORE_COLORS = { none: "#c0392b", sparse: "#e67e22", moderate: "#f1c40f", dense: "#27ae60" };
+
+async function loadJson(path) {
+  const resp = await fetch(path, { cache: "no-store" });
+  if (!resp.ok) return null;
+  return resp.json();
+}
+
+async function main() {
+  const geojson = await loadJson("coverage.geojson");
+  if (!geojson || !geojson.features.length) {
+    document.getElementById("empty").style.display = "flex";
+    return;
+  }
+  const gaps = (await loadJson("gaps.json")) || [];
+
+  const map = L.map("map");
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+    maxZoom: 18,
+  }).addTo(map);
+
+  const points = geojson.features.map(f => [f.geometry.coordinates[1], f.geometry.coordinates[0]]);
+  map.fitBounds(points, { padding: [20, 20] });
+
+  for (const f of geojson.features) {
+    const [lon, lat] = f.geometry.coordinates;
+    const p = f.properties;
+    L.circleMarker([lat, lon], {
+      radius: 4,
+      color: SCORE_COLORS[p.score] || "#999",
+      fillColor: SCORE_COLORS[p.score] || "#999",
+      fillOpacity: 0.8,
+      weight: 0,
+    }).bindPopup(
+      `km ${p.km} — ${p.score}<br>cells: ${p.cell_count}<br>` +
+      `operators: ${(p.operators || []).join(", ") || "none"}<br>` +
+      `nearest: ${p.nearest_m ? Math.round(p.nearest_m) + " m" : "n/a"}`
+    ).addTo(map);
+  }
+
+  for (const g of gaps) {
+    L.polyline([[g.start_lat, g.start_lon], [g.end_lat, g.end_lon]], {
+      color: "#c0392b", weight: 4, opacity: 0.6, dashArray: "6 6",
+    }).bindPopup(`dead zone: km ${g.start_km.toFixed(1)}–${g.end_km.toFixed(1)} ` +
+      `(${g.length_km.toFixed(1)} km)`).addTo(map);
+  }
+}
+
+main();
+</script>
+</body>
+</html>
