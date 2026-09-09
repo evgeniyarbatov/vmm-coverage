@@ -7,28 +7,45 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; color: #222; }
-  #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+  #map, #tableView { position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+  #map[hidden], #tableView[hidden] { display: none; }
   #banner {
     position: absolute; z-index: 1000; top: 12px; left: 12px; right: 12px;
-    max-width: 420px; background: #fff; border: 1px solid #ccc; border-radius: 6px;
+    max-width: 460px; background: #fff; border: 1px solid #ccc; border-radius: 6px;
     padding: 10px 14px; font-size: 13px; line-height: 1.4; box-shadow: 0 1px 4px rgba(0,0,0,.2);
   }
   #banner h1 { font-size: 15px; margin: 0 0 4px; }
+  #tabs { margin-top: 8px; display: flex; gap: 6px; }
+  #tabs button {
+    font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 4px;
+    border: 1px solid #999; background: #f2f2f2; cursor: pointer;
+  }
+  #tabs button.active { background: #2c3e50; color: #fff; border-color: #2c3e50; }
   #legend { position: absolute; z-index: 1000; bottom: 20px; left: 12px; background: #fff;
     border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; font-size: 12px; }
   #legend div { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
   #legend span.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
   #empty { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
     font-size: 14px; color: #555; text-align: center; padding: 20px; }
+  #tableView { overflow: auto; background: #fff; padding: 90px 20px 20px; box-sizing: border-box; }
+  #tableView h2 { font-size: 14px; margin: 20px 0 8px; }
+  #tableView table { border-collapse: collapse; font-size: 13px; max-width: 640px; width: 100%; }
+  #tableView th, #tableView td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; }
+  #tableView th { background: #f5f5f5; }
+  #stats { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 4px; }
+  #stats div { font-size: 12px; }
+  #stats b { display: block; font-size: 16px; }
 </style>
 </head>
 <body>
 <div id="banner">
   <h1>VMM coverage — observed towers near the track</h1>
   <div>Approximate cell-tower density from OpenCellID, not live signal. Red = no observed
-  towers within the search radius. See
-  <a href="https://github.com/evgeniyarbatov/vmm-coverage/blob/main/docs/summary.md">docs/summary.md</a>
-  in the repo for the full readout.</div>
+  towers within the search radius. This is not a guarantee of signal.</div>
+  <div id="tabs">
+    <button id="tabMap" class="active">Map</button>
+    <button id="tabTable">By carrier</button>
+  </div>
 </div>
 <div id="legend">
   <div><span class="dot" style="background:#c0392b"></span> none</div>
@@ -37,6 +54,7 @@
   <div><span class="dot" style="background:#27ae60"></span> dense</div>
 </div>
 <div id="map"></div>
+<div id="tableView" hidden></div>
 <div id="empty">No coverage data yet. Run <code>make fetch &amp;&amp; make run</code> and commit the
 files under <code>site/</code> to populate this map.</div>
 
@@ -54,14 +72,7 @@ async function loadJson(path) {
   }
 }
 
-async function main() {
-  const geojson = await loadJson("coverage.geojson");
-  if (!geojson || !geojson.features.length) {
-    document.getElementById("empty").style.display = "flex";
-    return;
-  }
-  const gaps = (await loadJson("gaps.json")) || [];
-
+function renderMap(geojson, gaps) {
   const map = L.map("map");
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
@@ -93,6 +104,74 @@ async function main() {
     }).bindPopup(`dead zone: km ${g.start_km.toFixed(1)}–${g.end_km.toFixed(1)} ` +
       `(${g.length_km.toFixed(1)} km)`).addTo(map);
   }
+}
+
+function carrierStats(features) {
+  const total = features.length;
+  const counts = new Map();
+  let noCarrier = 0;
+  for (const f of features) {
+    const ops = f.properties.operators || [];
+    if (ops.length === 0) noCarrier++;
+    for (const op of ops) counts.set(op, (counts.get(op) || 0) + 1);
+  }
+  const rows = [...counts.entries()]
+    .map(([operator, points]) => ({ operator, points, pct: (points / total) * 100 }))
+    .sort((a, b) => b.points - a.points);
+  return { rows, total, noCarrier };
+}
+
+function renderTable(geojson, gaps) {
+  const { rows, total, noCarrier } = carrierStats(geojson.features);
+  const totalKm = geojson.features.length
+    ? Math.max(...geojson.features.map(f => f.properties.km))
+    : 0;
+  const gapKm = gaps.reduce((sum, g) => sum + g.length_km, 0);
+
+  const el = document.getElementById("tableView");
+  el.innerHTML = `
+    <div id="stats">
+      <div><b>${totalKm.toFixed(1)} km</b>sampled</div>
+      <div><b>${total}</b>points</div>
+      <div><b>${gaps.length}</b>dead zones (${gapKm.toFixed(1)} km)</div>
+    </div>
+    <h2>Points with an observed carrier nearby</h2>
+    <table>
+      <thead><tr><th>Carrier</th><th>Points</th><th>% of track</th></tr></thead>
+      <tbody>
+        ${rows.map(r => `<tr><td>${r.operator}</td><td>${r.points}</td>` +
+          `<td>${r.pct.toFixed(1)}%</td></tr>`).join("")}
+        <tr><td>No carrier observed</td><td>${noCarrier}</td>
+          <td>${((noCarrier / total) * 100).toFixed(1)}%</td></tr>
+      </tbody>
+    </table>
+  `;
+}
+
+function setTab(tab) {
+  const map = document.getElementById("map");
+  const table = document.getElementById("tableView");
+  const tabMap = document.getElementById("tabMap");
+  const tabTable = document.getElementById("tabTable");
+  map.hidden = tab !== "map";
+  table.hidden = tab !== "table";
+  tabMap.classList.toggle("active", tab === "map");
+  tabTable.classList.toggle("active", tab === "table");
+}
+
+async function main() {
+  const geojson = await loadJson("coverage.geojson");
+  if (!geojson || !geojson.features.length) {
+    document.getElementById("empty").style.display = "flex";
+    return;
+  }
+  const gaps = (await loadJson("gaps.json")) || [];
+
+  renderMap(geojson, gaps);
+  renderTable(geojson, gaps);
+
+  document.getElementById("tabMap").addEventListener("click", () => setTab("map"));
+  document.getElementById("tabTable").addEventListener("click", () => setTab("table"));
 }
 
 main().catch(err => {
