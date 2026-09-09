@@ -1,0 +1,9 @@
+{
+  "count": 4,
+  "cells": [
+    {"lat": 22.303, "lon": 103.775, "mcc": 452, "mnc": 4, "radio": "UMTS", "range": 1000, "samples": 1},
+    {"lat": 22.304, "lon": 103.775, "mcc": 452, "mnc": 1, "radio": "UMTS", "range": 1000, "samples": 1},
+    {"lat": 22.304, "lon": 103.775, "mcc": 452, "mnc": 5, "radio": "GSM", "range": 1000, "samples": 1},
+    {"lat": 22.303, "lon": 103.775, "mcc": 452, "mnc": 4, "radio": "UMTS", "range": 1000, "samples": 1}
+  ]
+}

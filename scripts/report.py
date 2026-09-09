@@ -1,4 +1,4 @@
-"""Write samples/cells/gaps JSON (cache), and the CSV/GPX/summary/geojson reports (docs/)."""
+"""Write samples/cells/gaps JSON (cache), CSV/GPX/summary reports (docs/), and the Pages site (site/)."""
 
 import csv
 import json
@@ -62,9 +62,9 @@ def write_gpx(docs_dir: Path, coverage: list[SampleCoverage], gaps: list[Run]) -
     (docs_dir / "coverage.gpx").write_text(gpx.to_xml())
 
 
-def write_geojson(docs_dir: Path, coverage: list[SampleCoverage], gaps: list[Run]) -> None:
-    """Data file for docs/index.html; $DATA_DIR is gitignored so Pages needs its own copy."""
-    docs_dir.mkdir(parents=True, exist_ok=True)
+def write_geojson(site_dir: Path, coverage: list[SampleCoverage], gaps: list[Run]) -> None:
+    """Data files for site/index.html; $DATA_DIR is gitignored so the Pages site needs its own copy."""
+    site_dir.mkdir(parents=True, exist_ok=True)
     features = [{
         "type": "Feature",
         "geometry": {"type": "Point", "coordinates": [c.lon, c.lat]},
@@ -74,8 +74,8 @@ def write_geojson(docs_dir: Path, coverage: list[SampleCoverage], gaps: list[Run
         },
     } for c in coverage]
     geojson = {"type": "FeatureCollection", "features": features}
-    (docs_dir / "coverage.geojson").write_text(json.dumps(geojson))
-    (docs_dir / "gaps.json").write_text(json.dumps([asdict(g) for g in gaps], indent=2))
+    (site_dir / "coverage.geojson").write_text(json.dumps(geojson))
+    (site_dir / "gaps.json").write_text(json.dumps([asdict(g) for g in gaps], indent=2))
 
 
 def write_summary(docs_dir: Path, config: dict, coverage: list[SampleCoverage],

@@ -15,8 +15,7 @@ opencellid:
   mcc: 452
   mncs: [1, 2, 4, 5, 7]   # empty = all VN
   radios: []              # empty = all
-  prefer_download: true
-  max_api_credits: 200    # live-API safety cap
+  max_api_credits: 900    # live-API daily budget; OpenCellID's own cap is 1000/day
 
 osm:
   enabled: true

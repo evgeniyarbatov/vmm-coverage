@@ -27,6 +27,7 @@ def main() -> int:
 
     data_dir = get_data_dir()
     docs_dir = Path("docs")
+    site_dir = Path("site")
 
     points = load_track(config["gpx"])
     samples = densify(points, config["sample_m"])
@@ -44,12 +45,12 @@ def main() -> int:
     write_data_json(data_dir, coverage, cells, gaps)
     write_csv(docs_dir, coverage)
     write_gpx(docs_dir, coverage, gaps)
-    write_geojson(docs_dir, coverage, gaps)
+    write_geojson(site_dir, coverage, gaps)
     write_summary(docs_dir, config, coverage, gaps)
 
     print(f"bbox: {box}")
     print(f"{len(samples)} samples, {len(cells)} cells, {len(masts)} masts, {len(gaps)} gaps")
-    print("wrote docs/coverage.csv, docs/coverage.gpx, docs/summary.md, docs/coverage.geojson")
+    print("wrote docs/coverage.csv, docs/coverage.gpx, docs/summary.md, site/coverage.geojson")
     return 0
 
 

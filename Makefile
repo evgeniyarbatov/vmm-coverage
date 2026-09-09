@@ -24,7 +24,8 @@ run:
 
 clean:
 	rm -f $(DATA_DIR)/samples.json $(DATA_DIR)/cells.json $(DATA_DIR)/gaps.json
-	rm -f docs/coverage.csv docs/coverage.gpx docs/coverage.geojson docs/gaps.json docs/summary.md
+	rm -f docs/coverage.csv docs/coverage.gpx docs/summary.md
+	rm -f site/coverage.geojson site/gaps.json
 
 help:
 	@echo "install  - uv sync --group dev"

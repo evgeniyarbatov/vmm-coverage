@@ -9,16 +9,16 @@ Track length sampled: 156.8 km (629 points, 250 m spacing)
 
 | score | points | share |
 |---|---|---|
-| none | 629 | 100% |
-| sparse | 0 | 0% |
-| moderate | 0 | 0% |
-| dense | 0 | 0% |
+| none | 67 | 11% |
+| sparse | 114 | 18% |
+| moderate | 203 | 32% |
+| dense | 245 | 39% |
 
 ## Likely dead zones (no observed cells within radius)
 
 | from km | to km | length km |
 |---|---|---|
-| 0.0 | 156.8 | 156.8 |
+| 62.5 | 78.8 | 16.2 |
 
 ## Notes
 

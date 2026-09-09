@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="gpx.py -- https://github.com/tkrajina/gpxpy">
+  <wpt lat="22.303368773946996" lon="103.99183700191078">
+    <name>gap 16.2km @ km62.5</name>
+  </wpt>
   <wpt lat="22.33569" lon="103.84119">
-    <name>gap 156.8km @ km0.0</name>
+    <name>dense 8.0km @ km0.0</name>
+  </wpt>
+  <wpt lat="22.348081248428933" lon="103.88654266078353">
+    <name>dense 2.8km @ km9.0</name>
+  </wpt>
+  <wpt lat="22.331612271587648" lon="103.89687857921307">
+    <name>dense 2.2km @ km17.8</name>
+  </wpt>
+  <wpt lat="22.28696" lon="103.91347450078489">
+    <name>dense 27.8km @ km93.8</name>
+  </wpt>
+  <wpt lat="22.38980134770343" lon="103.85263541418203">
+    <name>dense 10.0km @ km128.8</name>
+  </wpt>
+  <wpt lat="22.340508365601043" lon="103.88449870200037">
+    <name>dense 8.2km @ km139.5</name>
   </wpt>
   <trk>
     <name>VMM coverage</name>

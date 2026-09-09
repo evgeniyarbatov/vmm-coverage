@@ -26,7 +26,9 @@
 <div id="banner">
   <h1>VMM coverage — observed towers near the track</h1>
   <div>Approximate cell-tower density from OpenCellID, not live signal. Red = no observed
-  towers within the search radius. See <a href="summary.md">summary.md</a> for the full readout.</div>
+  towers within the search radius. See
+  <a href="https://github.com/evgeniyarbatov/vmm-coverage/blob/main/docs/summary.md">docs/summary.md</a>
+  in the repo for the full readout.</div>
 </div>
 <div id="legend">
   <div><span class="dot" style="background:#c0392b"></span> none</div>
@@ -36,16 +38,20 @@
 </div>
 <div id="map"></div>
 <div id="empty">No coverage data yet. Run <code>make fetch &amp;&amp; make run</code> and commit the
-files under <code>docs/</code> to populate this map.</div>
+files under <code>site/</code> to populate this map.</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const SCORE_COLORS = { none: "#c0392b", sparse: "#e67e22", moderate: "#f1c40f", dense: "#27ae60" };
 
 async function loadJson(path) {
-  const resp = await fetch(path, { cache: "no-store" });
-  if (!resp.ok) return null;
-  return resp.json();
+  try {
+    const resp = await fetch(path, { cache: "no-store" });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch {
+    return null; // file:// blocks fetch of local files entirely (no response to check .ok on)
+  }
 }
 
 async function main() {
@@ -89,7 +95,11 @@ async function main() {
   }
 }
 
-main();
+main().catch(err => {
+  console.error(err);
+  document.getElementById("empty").textContent = "Failed to load the map: " + err.message;
+  document.getElementById("empty").style.display = "flex";
+});
 </script>
 </body>
 </html>

@@ -22,3 +22,11 @@ def bbox_pad_degrees(lat: float, pad_km: float) -> tuple[float, float]:
     dlat = pad_km / 111.0
     dlon = pad_km / (111.0 * max(math.cos(math.radians(lat)), 0.01))
     return dlat, dlon
+
+
+def tile_degrees(lat: float, max_area_m2: float) -> tuple[float, float]:
+    """Return (dlat, dlon) for a square tile of at most max_area_m2 at the given latitude."""
+    side_m = math.sqrt(max_area_m2)
+    dlat = side_m / 111_000.0
+    dlon = side_m / (111_000.0 * max(math.cos(math.radians(lat)), 0.01))
+    return dlat, dlon
