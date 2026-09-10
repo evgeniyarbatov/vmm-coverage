@@ -78,6 +78,13 @@ def write_geojson(site_dir: Path, coverage: list[SampleCoverage], gaps: list[Run
     (site_dir / "gaps.json").write_text(json.dumps([asdict(g) for g in gaps], indent=2))
 
 
+def write_meta(site_dir: Path, config: dict) -> None:
+    """Scoring parameters the site needs to caveat its own numbers."""
+    site_dir.mkdir(parents=True, exist_ok=True)
+    meta = {"search_radius_m": config["search_radius_m"], "sample_m": config["sample_m"]}
+    (site_dir / "meta.json").write_text(json.dumps(meta, indent=2))
+
+
 def write_osm_geojson(site_dir: Path, masts: list[dict]) -> None:
     """OSM masts as their own file/layer; presence only, not coverage."""
     site_dir.mkdir(parents=True, exist_ok=True)

@@ -12,6 +12,7 @@ from scripts.report import (
     write_data_json,
     write_geojson,
     write_gpx,
+    write_meta,
     write_osm_geojson,
     write_summary,
 )
@@ -54,12 +55,13 @@ def main() -> int:
     write_gpx(docs_dir, coverage, gaps)
     write_geojson(site_dir, coverage, gaps)
     write_osm_geojson(site_dir, masts)
+    write_meta(site_dir, config)
     write_summary(docs_dir, config, coverage, gaps)
 
     print(f"bbox: {box}")
     print(f"{len(samples)} samples, {len(cells)} cells, {len(masts)} masts, {len(gaps)} gaps")
     print("wrote docs/coverage.csv, docs/coverage.gpx, docs/summary.md, "
-          "site/coverage.geojson, site/osm_masts.geojson")
+          "site/coverage.geojson, site/osm_masts.geojson, site/meta.json")
     return 0
 
 
