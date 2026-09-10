@@ -136,10 +136,8 @@ function renderRadiusNote(meta) {
   if (!meta) return;
   const km = (meta.search_radius_m / 1000).toFixed(1);
   const el = document.getElementById("radiusNote");
-  el.textContent = `"Carrier nearby" = a tower within ${km} km straight-line distance. ` +
-    `That's the search radius this run used — a wider radius makes the green/dense ` +
-    `dots look more trustworthy than they are in steep terrain, since it ignores ` +
-    `ridgelines blocking line-of-sight.`;
+  el.textContent = `Search radius: ${km} km straight-line. Wider radius = less ` +
+    `trustworthy dots in steep terrain (ignores ridgelines).`;
   el.hidden = false;
 }
 
