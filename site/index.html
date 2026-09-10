@@ -21,10 +21,7 @@
     border: 1px solid #999; background: #f2f2f2; cursor: pointer;
   }
   #tabs button.active { background: #2c3e50; color: #fff; border-color: #2c3e50; }
-  #radiusNote {
-    margin-top: 8px; font-size: 11px; line-height: 1.4; color: #7a4a00;
-    background: #fff6e5; border: 1px solid #f0d9a0; border-radius: 4px; padding: 6px 8px;
-  }
+  #radiusNote { margin: 0 0 8px; font-size: 12px; color: #555; }
   #legend { position: absolute; z-index: 1000; bottom: 12px; right: 12px; background: #fff;
     border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; font-size: 12px; }
   #legend div { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
@@ -52,11 +49,11 @@
 <body>
 <div id="banner">
   <h1>VMM Cell Coverage</h1>
+  <div id="radiusNote" hidden></div>
   <div id="tabs">
     <button id="tabMap" class="active">Map</button>
     <button id="tabTable">By carrier</button>
   </div>
-  <div id="radiusNote" hidden></div>
 </div>
 <div id="sourceLink">
   <a href="https://github.com/evgeniyarbatov/vmm-coverage" target="_blank" rel="noopener">Source</a>
@@ -136,8 +133,7 @@ function renderRadiusNote(meta) {
   if (!meta) return;
   const km = (meta.search_radius_m / 1000).toFixed(1);
   const el = document.getElementById("radiusNote");
-  el.textContent = `Search radius: ${km} km straight-line. Wider radius = less ` +
-    `trustworthy dots in steep terrain (ignores ridgelines).`;
+  el.textContent = `Search radius: ${km} km straight-line`;
   el.hidden = false;
 }
 
