@@ -21,12 +21,6 @@ make run GPX=/path/to/other-course.gpx
 `make fetch` is the only step that touches the network; `make run` works entirely from
 the cache under `DATA_DIR` (default `~/Documents/data/vmm-coverage`).
 
-## Status
-
-| Folder | Status | Last touched | Next step |
-|---|---|---|---|
-| root | active | 2026-09-22 | Compare two SIMs (Viettel vs Vinaphone) as separate columns |
-
 ## API key
 
 Get a free key at [opencellid.org](https://opencellid.org) (docs:
