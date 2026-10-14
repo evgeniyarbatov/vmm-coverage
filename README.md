@@ -11,7 +11,7 @@ tower data is sparse in the Hoàng Liên Sơn. A "none" score means no towers ha
 "dense" score does not mean you will.
 
 ```bash
-make install
+make setup
 make test
 make fetch    # needs OPENCELLID_API_KEY, see below
 make run
@@ -49,13 +49,12 @@ See [architecture.md](architecture.md) for the pipeline.
 
 | target | does |
 |---|---|
-| `make install` | `uv sync --group dev` |
+| `make setup` | `uv sync --group dev` |
 | `make lock` | `uv lock` |
 | `make test` | run `tests/` (unittest, no network, no API key) |
 | `make lint` | `ruff check .` |
 | `make fetch` | download/refresh OpenCellID + OSM data into `DATA_DIR` |
 | `make run` | gpx → sample → join towers → report, offline from cache |
-| `make clean` | remove derived JSON/CSV/GPX/summary; keeps the downloaded tower DB |
 | `make help` | list targets |
 
 `DATA_DIR` (default `~/Documents/data/vmm-coverage`) and `GPX` (default from
